@@ -1,49 +1,52 @@
-Library Database Demo (JDBC, JPA, and ACID)
-This project demonstrates a Library Management System using MySQL, JDBC, and JPA (Hibernate), with a focus on ACID transaction properties. It showcases database concepts, Object-Relational Mapping (ORM), and Maven dependency management.
-Features
+Hệ thống Quản lý Thư viện (JDBC, JPA và ACID)
+Dự án này thể hiện một Hệ thống Quản lý Thư viện sử dụng MySQL, JDBC và JPA (Hibernate), với trọng tâm là các tính chất giao dịch ACID. Dự án trình bày các khái niệm cơ sở dữ liệu, ánh xạ đối tượng-quan hệ (ORM) và quản lý phụ thuộc bằng Maven.
+Tính năng
 
-Manage books, members, and borrow records in a MySQL database.
-Implement CRUD operations using JDBC and JPA.
-Demonstrate ACID properties (Atomicity, Consistency, Isolation, Durability) through transaction management.
-Use Maven for dependency management.
+Quản lý sách, thành viên và hồ sơ mượn sách trong cơ sở dữ liệu MySQL.
+Thực hiện các thao tác CRUD bằng JDBC và JPA.
+Minh họa các tính chất ACID (Nguyên tử, Nhất quán, Cô lập, Bền vững) thông qua quản lý giao dịch.
+Sử dụng Maven để quản lý phụ thuộc.
 
-ACID Properties Demonstrated
+Các tính chất ACID được minh họa
 
-Atomicity: Ensures borrow transactions (updating book status and adding borrow record) are fully completed or rolled back.
-Consistency: Enforces constraints like foreign keys and unique ISBNs.
-Isolation: Uses MySQL's REPEATABLE READ isolation level to handle concurrent transactions.
-Durability: Relies on InnoDB to persist data after commit.
+Nguyên tử (Atomicity): Đảm bảo các giao dịch mượn sách (cập nhật trạng thái sách và thêm hồ sơ mượn) được hoàn thành toàn bộ hoặc bị hủy bỏ (rollback).
+Nhất quán (Consistency): Áp dụng các ràng buộc như khóa ngoại và ISBN duy nhất, xử lý lỗi trùng lặp và kiểm tra tính sẵn có.
+Cô lập (Isolation): Sử dụng mức cô lập REPEATABLE READ của MySQL để xử lý các giao dịch đồng thời.
+Bền vững (Durability): Dựa vào InnoDB để lưu trữ dữ liệu vĩnh viễn sau khi commit.
 
-Prerequisites
+Yêu cầu
 
-MySQL Server and MySQL Workbench.
-Java JDK 11 or higher.
-Maven 3.6.0 or higher.
+MySQL Server và MySQL Workbench.
+Java JDK 11 hoặc cao hơn.
+Maven 3.6.0 hoặc cao hơn.
 
-Setup
+Thiết lập
 
-Install MySQL and create a database:CREATE DATABASE LibraryDB;
+Cài đặt MySQL và tạo cơ sở dữ liệu:CREATE DATABASE LibraryDB;
 
-Run SQL scripts in sql/ to create tables and insert data:mysql -u root -p LibraryDB < sql/create_tables.sql
+Chạy các script SQL trong thư mục sql/ để tạo bảng và chèn dữ liệu:mysql -u root -p LibraryDB < sql/create_tables.sql
 mysql -u root -p LibraryDB < sql/insert_data.sql
 
-Update database credentials:
-For JDBC: Update src/main/java/library/LibraryJDBCDemo.java.
-For JPA: Update src/main/resources/META-INF/persistence.xml.
+Cập nhật thông tin đăng nhập cơ sở dữ liệu:
+Với JDBC: Cập nhật file src/main/java/com/example/library/LibraryJDBCDemo.java.
+Với JPA: Cập nhật file src/main/resources/META-INF/persistence.xml.
 
-Build and run with Maven:mvn clean install
-mvn exec:java -Dexec.mainClass="library.LibraryJDBCDemo"
-mvn exec:java -Dexec.mainClass="library.LibraryJPADemo"
+Biên dịch và chạy bằng Maven:mvn clean install
+mvn exec:java -Dexec.mainClass="com.example.library.LibraryJDBCDemo"
+mvn exec:java -Dexec.mainClass="com.example.library.LibraryJPADemo"
 
-Project Structure
+Cấu trúc dự án
 LibraryDBJDBCJPADemo/
 ├── src/
 │ ├── main/
 │ │ ├── java/
-│ │ │ ├── library/
-│ │ │ │ ├── LibraryJDBCDemo.java
-│ │ │ │ ├── Book.java
-│ │ │ │ ├── LibraryJPADemo.java
+│ │ │ ├── com/
+│ │ │ │ ├── example/
+│ │ │ │ │ ├── library/
+│ │ │ │ │ │ ├── LibraryJDBCDemo.java
+│ │ │ │ │ │ ├── Book.java
+│ │ │ │ │ │ ├── BorrowRecord.java
+│ │ │ │ │ │ ├── LibraryJPADemo.java
 │ │ ├── resources/
 │ │ │ ├── META-INF/
 │ │ │ │ ├── persistence.xml
@@ -54,8 +57,8 @@ LibraryDBJDBCJPADemo/
 ├── README.md
 ├── .gitignore
 
-Author
+Tác giả
 
-[Your Name] (https://github.com/your-username)
+[Vũ Quốc Huy] (https://github.com/QuocHuyGIT103)
 
-This project was created to demonstrate JDBC, JPA, and ACID properties for a Java internship interview.
+Dự án này được tạo để thể hiện kỹ năng về JDBC, JPA và các tính chất ACID cho một buổi phỏng vấn thực tập Java.
