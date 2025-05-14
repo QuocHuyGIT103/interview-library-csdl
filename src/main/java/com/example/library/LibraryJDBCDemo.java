@@ -1,12 +1,6 @@
 package com.example.library;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class LibraryJDBCDemo {
     private static final String URL = "jdbc:mysql://localhost:3306/LibraryDB?useSSL=false";
@@ -17,18 +11,29 @@ public class LibraryJDBCDemo {
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD)) {
             System.out.println("Connected to MySQL database using JDBC!");
 
-            // Thêm sách mới
-            String insertSQL = "INSERT INTO Books (Title, Author, ISBN, IsAvailable) VALUES (?, ?, ?, ?)";
-            PreparedStatement pstmt = conn.prepareStatement(insertSQL);
-            pstmt.setString(1, "Java Programming");
-            pstmt.setString(2, "John Doe");
-            pstmt.setString(3, "12345");
-            pstmt.setBoolean(4, true);
-            pstmt.executeUpdate();
-            System.out.println("Added new book using JDBC.");
+            // Thêm sách mới (kiểm tra ISBN trước)
+            String isbn = "12345";
+            if (!isISBNExists(conn, isbn)) {
+                String insertSQL = "INSERT INTO Books (Title, Author, ISBN, IsAvailable) VALUES (?, ?, ?, ?)";
+                PreparedStatement pstmt = conn.prepareStatement(insertSQL);
+                pstmt.setString(1, "Java Programming");
+                pstmt.setString(2, "John Doe");
+                pstmt.setString(3, isbn);
+                pstmt.setBoolean(4, true);
+                pstmt.executeUpdate();
+                System.out.println("Added new book using JDBC.");
+            } else {
+                System.out.println("Book with ISBN " + isbn + " already exists.");
+            }
 
-            // Minh họa giao dịch mượn sách
-            borrowBookTransaction(conn, 1, 2);
+            // Kiểm tra BookID và MemberID trước khi mượn
+            int bookID = 1;
+            int memberID = 2;
+            if (isBookAvailable(conn, bookID) && isMemberExists(conn, memberID)) {
+                borrowBookTransaction(conn, bookID, memberID);
+            } else {
+                System.out.println("Cannot borrow: Book or Member does not exist or book is not available.");
+            }
 
             // Hiển thị tất cả sách
             String selectSQL = "SELECT * FROM Books";
@@ -38,10 +43,38 @@ public class LibraryJDBCDemo {
                 System.out.println("Book: " + rs.getString("Title") + ", Author: " + rs.getString("Author") +
                         ", ISBN: " + rs.getString("ISBN") + ", Available: " + rs.getBoolean("IsAvailable"));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean isISBNExists(Connection conn, String isbn) throws SQLException {
+        String checkSQL = "SELECT COUNT(*) FROM Books WHERE ISBN = ?";
+        PreparedStatement pstmt = conn.prepareStatement(checkSQL);
+        pstmt.setString(1, isbn);
+        ResultSet rs = pstmt.executeQuery();
+        rs.next();
+        return rs.getInt(1) > 0;
+    }
+
+    private static boolean isBookAvailable(Connection conn, int bookID) throws SQLException {
+        String checkSQL = "SELECT IsAvailable FROM Books WHERE BookID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(checkSQL);
+        pstmt.setInt(1, bookID);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean("IsAvailable");
+        }
+        return false; // Sách không tồn tại
+    }
+
+    private static boolean isMemberExists(Connection conn, int memberID) throws SQLException {
+        String checkSQL = "SELECT COUNT(*) FROM Members WHERE MemberID = ?";
+        PreparedStatement pstmt = conn.prepareStatement(checkSQL);
+        pstmt.setInt(1, memberID);
+        ResultSet rs = pstmt.executeQuery();
+        rs.next();
+        return rs.getInt(1) > 0;
     }
 
     private static void borrowBookTransaction(Connection conn, int bookID, int memberID) throws SQLException {
@@ -73,7 +106,6 @@ public class LibraryJDBCDemo {
             throw e;
         } finally {
             conn.setAutoCommit(true); // Đặt lại chế độ tự động commit
-
         }
     }
 }
